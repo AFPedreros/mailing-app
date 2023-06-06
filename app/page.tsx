@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { useCallback, useMemo, useRef, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import axios from "axios"
 
 import { banner, footers, headers, rows } from "@/lib/templates"
 import {
@@ -69,6 +71,26 @@ export default function Page() {
   const [replacedLinks, setReplacedLinks] = useState<string[]>([])
   const [replacedCallToAction, setReplacedCallToAction] = useState<string[]>([])
   const [bannerLink, setBannerLink] = useState("")
+
+  // const { data } = useQuery({
+  //   queryKey: ["news"],
+  //   queryFn: async () => {
+  //     const country = "Colombia";  // Puedes cambiar este valor según sea necesario.
+  //     const data = await axios.get(`/api/news?country=${country}`);
+  //     return data;
+  //   }
+  // });
+
+  const { data } = useQuery({
+    queryKey: ["news", "Colombia"], // Pasar el país como parte de la clave de consulta
+    queryFn: async ({ queryKey }) => {
+      const [_key, country] = queryKey;
+      const response = await axios.get(`/api/news?country=${country}`);
+      return response.data;
+    }
+  });
+  
+  
 
   const handleSelectChange = useCallback(() => {
     const value = formRef.current.country?.innerText
